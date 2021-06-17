@@ -3,8 +3,8 @@ Extend the ubi8/openjdk-11 image with git to be ran on Jenkins
 
 - [ubi8-openjdk-11-maven-git](#ubi8-openjdk-11-maven-git)
   - [Build](#build)
+  - [Deploy](#deploy)
   - [Check images](#check-images)
-  - [Login to quay](#login-to-quay)
 
 ## Build
 
@@ -14,7 +14,18 @@ Create the container image.
 $ buildah bud -f ./Dockerfile -t ubi8-openjdk11:maven-3.8-git
 ```
 
-Push the image to quay.io as a new version.
+## Deploy
+
+To deploy the container image to [quay.io](https://quay.io/) first login into quay.
+
+```bash
+$ buildah login quay.io
+Username: xxx
+Password:  xxx
+Login Succeeded!
+```
+
+Then push the image to quay.io as a new version.
 
 ```bash
 $ buildah push localhost/ubi8-openjdk11:maven-3.8-git docker://quay.io/snowdrop/ubi8-openjdk11:maven-3.8-git-<version>
@@ -34,15 +45,4 @@ List the images.
 $ buildah images
 REPOSITORY                                    TAG                   IMAGE ID       CREATED          SIZE
 localhost/ubi8-openjdk11                      maven-3.8-git         2c0d5ec1a027   23 seconds ago   724 MB
-```
-
-## Login to quay
-
-Login to quay:
-
-```bash
-$ buildah login quay.io
-Username: xxx
-Password:  xxx
-Login Succeeded!
 ```
