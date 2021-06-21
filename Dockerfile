@@ -1,13 +1,14 @@
-FROM registry.access.redhat.com/ubi8/openjdk-11
-USER root
-RUN microdnf install git
-# RUN echo "jenkins:x:0:" >> /etc/groups
-# RUN echo "jenkins:x:1000:0:Jenkins:$JENKINS_HOME:/bin/false" >> /etc/passwd
-RUN chgrp -R 0 * && \
-    chmod -R g=u *
-RUN chown 1000:0 -R *
-COPY uid_entrypoint /
-RUN chmod g=u /etc/passwd && chmod 775 /uid_entrypoint
-USER 1000
-ENTRYPOINT ["uid_entrypoint"]
-CMD ["runcmd"]
+FROM csanchez/maven:3.8-openjdk-11
+
+ARG USER="cloud"
+ARG USER_HOME_DIR="/home/$USER"
+
+ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
+
+RUN mkdir -p /home/$USER \
+    && groupadd -r $USER -g 1000 \
+    && useradd -u 1000 -r -g $USER -m -d /home/$USER -s /sbin/nologin -c "Cloud user" $USER \
+    && chmod 755 /home/$USER \
+    && chown -R $USER:$USER /home/$USER
+
+USER $USER
